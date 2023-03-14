@@ -8,7 +8,8 @@ wxIMPLEMENT_APP(MainApp);
 // Start Method
 bool MainApp::OnInit() {
 	CalculatorFrame* mainFrame = new CalculatorFrame();
-	mainFrame->SetClientSize(450, 750);
+	mainFrame->SetClientSize(425, 550);
+	mainFrame->SetIcon(wxIcon("aaaaaaaa"));
 	mainFrame->Center();
 	mainFrame->Show();
 	return true;
