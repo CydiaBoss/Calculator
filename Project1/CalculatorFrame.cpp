@@ -1,4 +1,4 @@
-#include "CalculatorFrame.h"
+﻿#include "CalculatorFrame.h"
 #include <wx/wx.h>
 
 /// <summary>
@@ -10,21 +10,21 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 	wxBoxSizer* mainSizer;
 	mainSizer = new wxBoxSizer(wxVERTICAL);
 
-	displayPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxDefaultSize, wxTAB_TRAVERSAL);
+	displayPanel = new wxPanel(this, wxID_ANY, wxDefaultPosition, wxSize(), wxTAB_TRAVERSAL);
 	displayPanel->SetBackgroundColour(wxSystemSettings::GetColour(wxSYS_COLOUR_3DLIGHT));
 
 	wxBoxSizer* containerSizer;
-	containerSizer = new wxBoxSizer(wxVERTICAL);
+	containerSizer = new wxBoxSizer(wxHORIZONTAL);
 
 	displayText = new wxStaticText(displayPanel, wxID_ANY, "");
 	displayText->SetFont(wxFont(24, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Courier New")));
 
-	containerSizer->Add(displayText, 0, wxALL, 5);
+	containerSizer->Add(displayText, 1, wxALL | wxEXPAND, 5);
 
 	displayPanel->SetSizer(containerSizer);
 	displayPanel->Layout();
 	containerSizer->Fit(displayPanel);
-	mainSizer->Add(displayPanel, 1, wxALL | wxEXPAND, 5);
+	mainSizer->Add(displayPanel, 1, wxALL | wxEXPAND | wxFIXED_MINSIZE, 5);
 
 	wxFlexGridSizer* numPad;
 	numPad = new wxFlexGridSizer(4, 4, 0, 0);
@@ -36,14 +36,14 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 	numPad->SetFlexibleDirection(wxBOTH);
 	numPad->SetNonFlexibleGrowMode(wxFLEX_GROWMODE_ALL);
 
-	sevenBtn = new wxButton(this, wxID_ANY, wxT("7"));
-	numPad->Add(sevenBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[7] = new wxButton(this, wxID_ANY, wxT("7"));
+	numPad->Add(numPadBtn[7], 0, wxALL | wxEXPAND, 5);
 
-	eightBtn = new wxButton(this, wxID_ANY, wxT("8"));
-	numPad->Add(eightBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[8] = new wxButton(this, wxID_ANY, wxT("8"));
+	numPad->Add(numPadBtn[8], 0, wxALL | wxEXPAND, 5);
 
-	nineBtn = new wxButton(this, wxID_ANY, wxT("9"));
-	numPad->Add(nineBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[9] = new wxButton(this, wxID_ANY, wxT("9"));
+	numPad->Add(numPadBtn[9], 0, wxALL | wxEXPAND, 5);
 
 	wxBoxSizer* bracketSizer;
 	bracketSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -56,34 +56,34 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 
 	numPad->Add(bracketSizer, 1, wxEXPAND, 5);
 
-	fourBtn = new wxButton(this, wxID_ANY, wxT("4"));
-	numPad->Add(fourBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[4] = new wxButton(this, wxID_ANY, wxT("4"));
+	numPad->Add(numPadBtn[4], 0, wxALL | wxEXPAND, 5);
 
-	fiveBtn = new wxButton(this, wxID_ANY, wxT("5"));
-	numPad->Add(fiveBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[5] = new wxButton(this, wxID_ANY, wxT("5"));
+	numPad->Add(numPadBtn[5], 0, wxALL | wxEXPAND, 5);
 
-	sixBtn = new wxButton(this, wxID_ANY, wxT("6"));
-	numPad->Add(sixBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[6] = new wxButton(this, wxID_ANY, wxT("6"));
+	numPad->Add(numPadBtn[6], 0, wxALL | wxEXPAND, 5);
 
 	wxBoxSizer* multDivSizer;
 	multDivSizer = new wxBoxSizer(wxHORIZONTAL);
 
-	multbtn = new wxButton(this, wxID_ANY, wxT("x"));
-	multDivSizer->Add(multbtn, 0, wxALL | wxEXPAND, 5);
+	multBtn = new wxButton(this, wxID_ANY, wxT("×"));
+	multDivSizer->Add(multBtn, 0, wxALL | wxEXPAND, 5);
 
-	divbtn = new wxButton(this, wxID_ANY, wxT("/"));
-	multDivSizer->Add(divbtn, 0, wxALL | wxEXPAND, 5);
+	divBtn = new wxButton(this, wxID_ANY, wxT("÷"));
+	multDivSizer->Add(divBtn, 0, wxALL | wxEXPAND, 5);
 
 	numPad->Add(multDivSizer, 1, wxEXPAND, 5);
 
-	oneBtn = new wxButton(this, wxID_ANY, wxT("1"));
-	numPad->Add(oneBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[1] = new wxButton(this, wxID_ANY, wxT("1"));
+	numPad->Add(numPadBtn[1], 0, wxALL | wxEXPAND, 5);
 
-	twoBtn = new wxButton(this, wxID_ANY, wxT("2"));
-	numPad->Add(twoBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[2] = new wxButton(this, wxID_ANY, wxT("2"));
+	numPad->Add(numPadBtn[2], 0, wxALL | wxEXPAND, 5);
 
-	threeBtn = new wxButton(this, wxID_ANY, wxT("3"));
-	numPad->Add(threeBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[3] = new wxButton(this, wxID_ANY, wxT("3"));
+	numPad->Add(numPadBtn[3], 0, wxALL | wxEXPAND, 5);
 
 	wxBoxSizer* plusMinSizer;
 	plusMinSizer = new wxBoxSizer(wxHORIZONTAL);
@@ -96,8 +96,8 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 
 	numPad->Add(plusMinSizer, 1, wxEXPAND, 5);
 
-	zeroBtn = new wxButton(this, wxID_ANY, wxT("0"));
-	numPad->Add(zeroBtn, 0, wxALL | wxEXPAND, 5);
+	numPadBtn[0] = new wxButton(this, wxID_ANY, wxT("0"));
+	numPad->Add(numPadBtn[0], 0, wxALL | wxEXPAND, 5);
 
 	decimalBtn = new wxButton(this, wxID_ANY, wxT("."));
 	numPad->Add(decimalBtn, 0, wxALL | wxEXPAND, 5);
@@ -116,10 +116,102 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 	this->Centre(wxBOTH);
 
 	// Assigned Events
-	oneBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onOneClick, this);
+	numPadBtn[1]->Bind(wxEVT_BUTTON, &CalculatorFrame::onOneClick, this);
+	numPadBtn[2]->Bind(wxEVT_BUTTON, &CalculatorFrame::onTwoClick, this);
+	numPadBtn[3]->Bind(wxEVT_BUTTON, &CalculatorFrame::onThreeClick, this);
+	numPadBtn[4]->Bind(wxEVT_BUTTON, &CalculatorFrame::onFourClick, this);
+	numPadBtn[5]->Bind(wxEVT_BUTTON, &CalculatorFrame::onFiveClick, this);
+	numPadBtn[6]->Bind(wxEVT_BUTTON, &CalculatorFrame::onSixClick, this);
+	numPadBtn[7]->Bind(wxEVT_BUTTON, &CalculatorFrame::onSevenClick, this);
+	numPadBtn[8]->Bind(wxEVT_BUTTON, &CalculatorFrame::onEightClick, this);
+	numPadBtn[9]->Bind(wxEVT_BUTTON, &CalculatorFrame::onNineClick, this);
+	numPadBtn[0]->Bind(wxEVT_BUTTON, &CalculatorFrame::onZeroClick, this);
+
+	fBracketBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onFBracketClick, this);
+	bBracketBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onBBracketClick, this);
+	multBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onMultClick, this);
+	divBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onDivClick, this);
+	plusBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onAddClick, this);
+	minusBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onMinClick, this);
+
+	decimalBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onDecClick, this);
+	negBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onNegClick, this);
+
+	equalBtn->Bind(wxEVT_BUTTON, &CalculatorFrame::onEqualClick, this);
 }
 
 void CalculatorFrame::onOneClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "1");
-	displayText->Wrap(-1);
+}
+
+void CalculatorFrame::onTwoClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "2");
+}
+
+void CalculatorFrame::onThreeClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "3");
+}
+
+void CalculatorFrame::onFourClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "4");
+}
+
+void CalculatorFrame::onFiveClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "5");
+}
+
+void CalculatorFrame::onSixClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "6");
+}
+
+void CalculatorFrame::onSevenClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "7");
+}
+
+void CalculatorFrame::onEightClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "8");
+}
+
+void CalculatorFrame::onNineClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "9");
+}
+
+void CalculatorFrame::onZeroClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "0");
+}
+
+void CalculatorFrame::onFBracketClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "(");
+}
+
+void CalculatorFrame::onBBracketClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + ")");
+}
+
+void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "×");
+}
+
+void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "÷");
+}
+
+void CalculatorFrame::onAddClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "+");
+}
+
+void CalculatorFrame::onMinClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "-");
+}
+
+void CalculatorFrame::onDecClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + ".");
+}
+
+void CalculatorFrame::onNegClick(wxCommandEvent& evt) {
+	displayText->SetLabelText(displayText->GetLabelText() + "-");
+}
+
+void CalculatorFrame::onEqualClick(wxCommandEvent& evt) {
+	displayText->SetLabelText("");
 }

@@ -21,10 +21,12 @@
   <ItemGroup>
     <ClInclude Include="CalculatorFrame.h" />
     <ClInclude Include="MainApp.h" />
+    <ClInclude Include="Term.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="CalculatorFrame.cpp" />
     <ClCompile Include="MainApp.cpp" />
+    <ClCompile Include="Term.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Resource.rc" />

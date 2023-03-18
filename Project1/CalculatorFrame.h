@@ -12,22 +12,13 @@ protected:
 	wxStaticText* displayText;
 
 	// Number Buttons
-	wxButton* oneBtn;
-	wxButton* twoBtn;
-	wxButton* threeBtn;
-	wxButton* fourBtn;
-	wxButton* fiveBtn;
-	wxButton* sixBtn;
-	wxButton* sevenBtn;
-	wxButton* eightBtn;
-	wxButton* nineBtn;
-	wxButton* zeroBtn;
+	wxButton* numPadBtn[10];
 
 	// Function Buttons
 	wxButton* fBracketBtn;
 	wxButton* bBracketBtn;
-	wxButton* multbtn;
-	wxButton* divbtn;
+	wxButton* multBtn;
+	wxButton* divBtn;
 	wxButton* plusBtn;
 	wxButton* minusBtn;
 	wxButton* decimalBtn;
@@ -50,6 +41,13 @@ private:
 	// Function Button Events
 	void onFBracketClick(wxCommandEvent& evt);
 	void onBBracketClick(wxCommandEvent& evt);
+	void onMultClick(wxCommandEvent& evt);
+	void onDivClick(wxCommandEvent& evt);
+	void onAddClick(wxCommandEvent& evt);
+	void onMinClick(wxCommandEvent& evt);
+	void onDecClick(wxCommandEvent& evt);
+	void onNegClick(wxCommandEvent& evt);
+	void onEqualClick(wxCommandEvent& evt);
 
 };
 
