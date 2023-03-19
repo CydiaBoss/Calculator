@@ -4,39 +4,97 @@
 
 using namespace std;
 
-Term::Term(bool positive, double constant) {
-	this->positive = positive;
-	this->parent = false;
-	this->constants = {
-		{0, constant},
-	};
+Term::Term(bool parent, bool positive, Term firstChild) {
 
-	// Empty
-	this->operations = {};
-	this->terms = {};
 }
 
-Term::Term(vector<char> operations, map<int, Term> terms, map<int, double> constants) {
-	this->positive = true;
-	this->operations = operations;
-	this->terms = terms;
-	this->constants = constants;
+Term::Term(bool parent, bool positive, double firstChild) {
+
+}
+
+void Term::addSubTerm(unsigned int operation, Term subterm) {
+
+}
+
+void Term::addSubTerm(unsigned int operation, double subterm) {
+
+}
+
+void Term::addChild(Term child) {
+
+}
+
+void Term::addChild(double child) {
+
+}
+
+unsigned int Term::length() {
+	return constants.size() + terms.size();
 }
 
 double Term::calculate() {
-	// Start Math
-	double total = 0;
-	int i;
-	for (i = 0; i < this->constants.size() + this->terms.size(); i++) {
-		// Attempt to Look for value in constants map
-		try {
-			total += constants.at(i);
-		} catch (const std::out_of_range&) {
-			
+
+	// Term Info
+	double value;
+
+	// Attempt to Look for value in constants map
+	try {
+		value = constants.at(0);
+	}
+	// Conduct math from Term
+	catch (const std::out_of_range&) {
+		value = terms.at(0).calculate();
+	}
+
+	// Start Calculation
+	for (int i = 1; i < length(); i++) {
+		// Parent Mode
+		if (parent) {
+			try {
+				value += constants.at(i);
+			} catch (const std::out_of_range&) {
+				// Conduct math
+				value += terms.at(i).calculate();
+			}
+		}
+
+		// SubTerm Mode
+		else {
+			try {
+				switch (operations[i]) {
+				case MULT:
+					value *= constants.at(i);
+					break;
+				case DIV:
+					value /= constants.at(i);
+					break;
+				default:
+					break;
+				}
+			}
+			catch (const std::out_of_range&) {
+				// Conduct Math
+				switch (operations[i]) {
+				case MULT:
+					value *= terms.at(i).calculate();
+					break;
+				case DIV:
+					value /= terms.at(i).calculate();
+					break;
+				default:
+					break;
+				}
+			}
 		}
 	}
 
-	// Add Sign based on 
+	return value * (positive ? 1 : -1);
 }
 
-Term::~Term() {}
+Term::~Term() {
+	delete& parent;
+	delete& positive;
+	delete& operations;
+	delete& constants;
+	delete& terms;
+}
