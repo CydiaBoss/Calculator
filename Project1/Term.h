@@ -49,6 +49,11 @@ public:
 	};
 
 	/// <summary>
+	/// Creates a default parent term
+	/// </summary>
+	Term();
+
+	/// <summary>
 	/// Creates a term
 	/// </summary>
 	/// <param name="parent">-> determine term type</param>
@@ -101,8 +106,6 @@ public:
 	/// </summary>
 	/// <returns>value of term</returns>
 	double calculate();
-
-	~Term();
 
 };
 
