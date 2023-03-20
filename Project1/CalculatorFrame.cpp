@@ -1,5 +1,10 @@
 ﻿#include "CalculatorFrame.h"
+#include "Term.h"
 #include <wx/wx.h>
+#include <cmath>
+#include <vector>
+
+using namespace std;
 
 /// <summary>
 /// The Main Frame for the Calculator Application
@@ -20,6 +25,18 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 	displayText->SetFont(wxFont(24, wxFONTFAMILY_MODERN, wxFONTSTYLE_NORMAL, wxFONTWEIGHT_NORMAL, false, wxT("Courier New")));
 
 	containerSizer->Add(displayText, 1, wxALL | wxEXPAND, 5);
+
+	// Trackers
+	activeTerms = {
+		// Main Term
+		new Term(),
+	};
+	currentTerm = nullptr;
+	currentNumber = 0;
+	decimalPoint = 0;
+	positive = true;
+
+	CreateStatusBar();
 
 	displayPanel->SetSizer(containerSizer);
 	displayPanel->Layout();
@@ -142,54 +159,80 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 
 void CalculatorFrame::onOneClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "1");
+	appendDigit(1);
 }
 
 void CalculatorFrame::onTwoClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "2");
+	appendDigit(2);
 }
 
 void CalculatorFrame::onThreeClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "3");
+	appendDigit(3);
 }
 
 void CalculatorFrame::onFourClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "4");
+	appendDigit(4);
 }
 
 void CalculatorFrame::onFiveClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "5");
+	appendDigit(5);
 }
 
 void CalculatorFrame::onSixClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "6");
+	appendDigit(6);
 }
 
 void CalculatorFrame::onSevenClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "7");
+	appendDigit(7);
 }
 
 void CalculatorFrame::onEightClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "8");
+	appendDigit(8);
 }
 
 void CalculatorFrame::onNineClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "9");
+	appendDigit(9);
 }
 
 void CalculatorFrame::onZeroClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "0");
+	appendDigit(0);
 }
 
 void CalculatorFrame::onFBracketClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "(");
+
+	// Setup Term
+	activeTerms.push_back(new Term());
 }
 
 void CalculatorFrame::onBBracketClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + ")");
+
+	// Remove Closed Term from active terms
+	activeTerms.pop_back();
 }
 
 void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "×");
+
+	// Grab Pointer
+	Term* subterm_parent;
+
+	// Check if term container of subterms doesn't exists
+	if (activeTerms.back()->isParent()) {
+		// Setup Term
+		//subterm_parent = new Term(false, true, );
+		//activeTerms.push_back();
+	}
 }
 
 void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
@@ -198,20 +241,91 @@ void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
 
 void CalculatorFrame::onAddClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "+");
+
+	// Append to Parent Term
+	if (currentTerm == nullptr) {
+		activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+		// Reset
+		currentNumber = 0;
+		decimalPoint = 0;
+		positive = true;
+	} else {
+		activeTerms.back()->addChild(*currentTerm);
+		// Reset
+		currentTerm = nullptr;
+	}
 }
 
 void CalculatorFrame::onMinClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + "-");
+
+	// Append to Parent Term
+	if (currentTerm == nullptr) {
+		activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+		// Reset
+		currentNumber = 0;
+		decimalPoint = 0;
+		positive = false;
+	}
+	else {
+		activeTerms.back()->addChild(*currentTerm);
+		// Reset
+		currentTerm = nullptr;
+	}
 }
 
 void CalculatorFrame::onDecClick(wxCommandEvent& evt) {
 	displayText->SetLabelText(displayText->GetLabelText() + ".");
+	// Start Countdown
+	decimalPoint = 1;
 }
 
 void CalculatorFrame::onNegClick(wxCommandEvent& evt) {
-	displayText->SetLabelText(displayText->GetLabelText() + "-");
+	// Only Allow this to be entered at beginning of decimals and terms
+	if (currentNumber == 0) {
+		displayText->SetLabelText(displayText->GetLabelText() + "-");
+	
+		positive = !positive;
+	}
 }
 
 void CalculatorFrame::onEqualClick(wxCommandEvent& evt) {
 	displayText->SetLabelText("");
+
+	// Append to Parent Term
+	if (currentTerm == nullptr) {
+		activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+		// Reset
+		currentNumber = 0;
+		decimalPoint = 0;
+		positive = true;
+	}
+	else {
+		activeTerms.back()->addChild(*currentTerm);
+		// Reset
+		currentTerm = nullptr;
+	}
+
+	// Reset Trackers
+	wxLogStatus("Current Number: %f", activeTerms.front()->calculate());
+	currentNumber = 0;
+	decimalPoint = 0;
+	positive = true;
+	activeTerms.front()->clear();
+}
+
+void CalculatorFrame::appendDigit(unsigned int digit) {
+	// Add Digit to currentNumber
+	currentNumber = currentNumber * (decimalPoint == 0 ? 10 : 1) + digit / pow(10, decimalPoint);
+
+	// Adjust decimalPoint if needed
+	if (decimalPoint > 0)
+		decimalPoint++;
+}
+
+CalculatorFrame::~CalculatorFrame() {
+	// Free Terms
+	for (vector<Term*>::iterator i = activeTerms.begin(); i != activeTerms.end(); ++i) {
+		delete* i;
+	}
 }

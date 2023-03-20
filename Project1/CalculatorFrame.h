@@ -1,13 +1,26 @@
-#pragma once
 #include <wx/wx.h>
+#include <vector>
 #include "Term.h"
+
+#pragma once
+
+using namespace std;
 
 class CalculatorFrame : public wxFrame {
 
 public:
 	CalculatorFrame();
+	~CalculatorFrame();
 
 protected:
+	// Main Parent Term
+	vector<Term*> activeTerms;
+
+	// Tracking
+	bool positive;
+	Term* currentTerm;
+	double currentNumber;
+	unsigned int decimalPoint;
 
 	// Display Objects
 	wxPanel* displayPanel;
@@ -51,5 +64,6 @@ private:
 	void onNegClick(wxCommandEvent& evt);
 	void onEqualClick(wxCommandEvent& evt);
 
+	void appendDigit(unsigned int digit);
 };
 

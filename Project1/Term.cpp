@@ -44,6 +44,18 @@ Term::Term(bool parent, bool positive, double firstChild) {
 	this->operations = {};
 }
 
+bool Term::isParent() {
+	return parent;
+}
+
+bool Term::isPositive() {
+	return positive;
+}
+
+void Term::setPositive(bool positive) {
+	this->positive = positive;
+}
+
 void Term::addSubTerm(unsigned int operation, Term subterm) {
 	// Add Operation
 	operations.push_back(operation);
@@ -72,6 +84,12 @@ void Term::addChild(double child) {
 
 unsigned int Term::length() {
 	return constants.size() + terms.size();
+}
+
+void Term::clear() {
+	constants.clear();
+	terms.clear();
+	operations.clear();
 }
 
 double Term::calculate() {

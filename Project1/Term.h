@@ -70,6 +70,24 @@ public:
 	Term(bool parent, bool positive, double firstChild);
 
 	/// <summary>
+	/// Check if a term is a parent
+	/// </summary>
+	/// <returns>parent status</returns>
+	bool isParent();
+
+	/// <summary>
+	/// Check if a term is a parent
+	/// </summary>
+	/// <returns>parent status</returns>
+	bool isPositive();
+
+	/// <summary>
+	/// Check if a term is a parent
+	/// </summary>
+	/// <returns>parent status</returns>
+	void setPositive(bool positive);
+
+	/// <summary>
 	/// Add a Term subterm
 	/// </summary>
 	/// <param name="operation">-> operation to apply between subterm</param>
@@ -100,6 +118,11 @@ public:
 	/// </summary>
 	/// <returns>size of Term</returns>
 	unsigned int length();
+
+	/// <summary>
+	/// Empty out term
+	/// </summary>
+	void clear();
 
 	/// <summary>
 	/// Calculate a term
