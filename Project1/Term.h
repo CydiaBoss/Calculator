@@ -5,6 +5,17 @@
 
 using namespace std;
 
+enum operationIDS {
+	// Nullification
+	termNULL = 0,
+
+	// Multipication
+	termMULT = 1,
+
+	// Division
+	termDIV = 2,
+};
+
 /// <summary>
 /// Term within a mathematical equation
 /// </summary>
@@ -39,15 +50,6 @@ private:
 	map<unsigned int, Term> terms;
 
 public:
-
-	enum operationIDS {
-		// Multipication
-		MULT = 1,
-
-		// Division
-		DIV = 2,
-	};
-
 	/// <summary>
 	/// Creates a default parent term
 	/// </summary>

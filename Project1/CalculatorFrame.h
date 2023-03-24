@@ -19,6 +19,7 @@ protected:
 	// Tracking
 	bool positive;
 	Term* currentTerm;
+	unsigned int currentOperation;
 	double currentNumber;
 	unsigned int decimalPoint;
 

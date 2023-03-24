@@ -32,6 +32,7 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 		new Term(),
 	};
 	currentTerm = nullptr;
+	currentOperation = termNULL;
 	currentNumber = 0;
 	decimalPoint = 0;
 	positive = true;
@@ -222,62 +223,164 @@ void CalculatorFrame::onBBracketClick(wxCommandEvent& evt) {
 }
 
 void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
-	displayText->SetLabelText(displayText->GetLabelText() + "×");
-
 	// Grab Pointer
 	Term* subterm_parent;
 
 	// Check if term container of subterms doesn't exists
 	if (activeTerms.back()->isParent()) {
 		// Setup Term
-		//subterm_parent = new Term(false, true, );
-		//activeTerms.push_back();
+		if (currentTerm == nullptr) {
+			subterm_parent = new Term(false, true, currentNumber);
+		}else{
+			subterm_parent = new Term(false, true, *currentTerm);
+		}
+
+		// Append to activeTerms
+		activeTerms.push_back(subterm_parent);
+	}else{
+		subterm_parent = activeTerms.back();
+
+		// Add Subterm
+		if (currentTerm == nullptr) {
+			subterm_parent->addSubTerm(currentOperation, currentNumber);
+		}
+		else {
+			subterm_parent->addSubTerm(currentOperation, *currentTerm);
+		}
 	}
+
+	// Update currentOperator
+	currentOperation = termMULT;
+
+	// Update Display
+	displayText->SetLabelText(displayText->GetLabelText() + "×");
 }
 
 void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
+	// Grab Pointer
+	Term* subterm_parent;
+
+	// Check if term container of subterms doesn't exists
+	if (activeTerms.back()->isParent()) {
+		// Setup Term
+		if (currentTerm == nullptr) {
+			subterm_parent = new Term(false, true, currentNumber);
+		}
+		else {
+			subterm_parent = new Term(false, true, *currentTerm);
+		}
+
+		// Append to activeTerms
+		activeTerms.push_back(subterm_parent);
+	}
+	else {
+		subterm_parent = activeTerms.back();
+
+		// Add Subterm
+		if (currentTerm == nullptr) {
+			subterm_parent->addSubTerm(currentOperation, currentNumber);
+		}
+		else {
+			subterm_parent->addSubTerm(currentOperation, *currentTerm);
+		}
+	}
+
+	// Update currentOperator
+	currentOperation = termDIV;
+
+	// Update Display
 	displayText->SetLabelText(displayText->GetLabelText() + "÷");
 }
 
 void CalculatorFrame::onAddClick(wxCommandEvent& evt) {
-	displayText->SetLabelText(displayText->GetLabelText() + "+");
+	// MULT and DIV interject
+	if (!activeTerms.back()->isParent()) {
+		// Add Subterm
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addSubTerm(currentOperation, currentNumber);
+		}
+		else {
+			activeTerms.back()->addSubTerm(currentOperation, *currentTerm);
+		}
 
-	// Append to Parent Term
-	if (currentTerm == nullptr) {
-		activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+		// Remove latest activeTerm
+		activeTerms.pop_back();
+
 		// Reset
 		currentNumber = 0;
-		decimalPoint = 0;
-		positive = true;
-	} else {
-		activeTerms.back()->addChild(*currentTerm);
-		// Reset
 		currentTerm = nullptr;
+		decimalPoint = 0;
+	// Regular
+	} else {
+		// Append to Parent Term
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+			// Reset
+			currentNumber = 0;
+			decimalPoint = 0;
+		} else {
+			activeTerms.back()->addChild(*currentTerm);
+			// Reset
+			currentTerm = nullptr;
+		}
 	}
+
+	// Set for future
+	positive = true;
+
+	// Update Display
+	displayText->SetLabelText(displayText->GetLabelText() + "+");
 }
 
 void CalculatorFrame::onMinClick(wxCommandEvent& evt) {
-	displayText->SetLabelText(displayText->GetLabelText() + "-");
+	// MULT and DIV interject
+	if (!activeTerms.back()->isParent()) {
+		// Add Subterm
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addSubTerm(currentOperation, currentNumber);
+		}
+		else {
+			activeTerms.back()->addSubTerm(currentOperation, *currentTerm);
+		}
 
-	// Append to Parent Term
-	if (currentTerm == nullptr) {
-		activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+		// Remove latest activeTerm
+		activeTerms.pop_back();
+
 		// Reset
 		currentNumber = 0;
-		decimalPoint = 0;
-		positive = false;
-	}
-	else {
-		activeTerms.back()->addChild(*currentTerm);
-		// Reset
 		currentTerm = nullptr;
+		decimalPoint = 0;
+	// Regular
+	} else {
+		// Append to Parent Term
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+			// Reset
+			currentNumber = 0;
+			decimalPoint = 0;
+		}
+		else {
+			activeTerms.back()->addChild(*currentTerm);
+			// Reset
+			currentTerm = nullptr;
+		}
 	}
+
+	// Set for future
+	positive = false;
+
+	// Update Display
+	displayText->SetLabelText(displayText->GetLabelText() + "-");
 }
 
 void CalculatorFrame::onDecClick(wxCommandEvent& evt) {
-	displayText->SetLabelText(displayText->GetLabelText() + ".");
-	// Start Countdown
-	decimalPoint = 1;
+	// Start Countdown if not already
+	if (decimalPoint == 0) {
+		decimalPoint = 1;
+
+		// Update Display
+		displayText->SetLabelText(displayText->GetLabelText() + ".");
+	}
 }
 
 void CalculatorFrame::onNegClick(wxCommandEvent& evt) {
@@ -290,28 +393,44 @@ void CalculatorFrame::onNegClick(wxCommandEvent& evt) {
 }
 
 void CalculatorFrame::onEqualClick(wxCommandEvent& evt) {
-	displayText->SetLabelText("");
+	// MULT and DIV interject
+	if (!activeTerms.back()->isParent()) {
+		// Add Subterm
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addSubTerm(currentOperation, currentNumber);
+		} else {
+			activeTerms.back()->addSubTerm(currentOperation, *currentTerm);
+		}
 
-	// Append to Parent Term
-	if (currentTerm == nullptr) {
-		activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
-		// Reset
-		currentNumber = 0;
-		decimalPoint = 0;
-		positive = true;
-	}
-	else {
-		activeTerms.back()->addChild(*currentTerm);
-		// Reset
-		currentTerm = nullptr;
+		// Remove latest activeTerm
+		activeTerms.pop_back();
+	// Regular
+	} else {
+		// Append to Parent Term
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+		} else {
+			activeTerms.back()->addChild(*currentTerm);
+		}
 	}
 
+	// Catch Unclosed terms
+	if (activeTerms.size() > 1) {
+		wxLogMessage("Error: Terms still open.");
+		return;
+	}
+	
 	// Reset Trackers
 	wxLogStatus("Current Number: %f", activeTerms.front()->calculate());
 	currentNumber = 0;
+	currentTerm = nullptr;
+	currentOperation = termNULL;
 	decimalPoint = 0;
 	positive = true;
 	activeTerms.front()->clear();
+
+	// Update Display
+	displayText->SetLabelText("");
 }
 
 void CalculatorFrame::appendDigit(unsigned int digit) {

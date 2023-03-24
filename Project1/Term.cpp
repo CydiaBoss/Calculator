@@ -122,10 +122,10 @@ double Term::calculate() {
 		else {
 			try {
 				switch (operations[i]) {
-				case MULT:
+				case termMULT:
 					value *= constants.at(i);
 					break;
-				case DIV:
+				case termDIV:
 					value /= constants.at(i);
 					break;
 				default:
@@ -135,10 +135,10 @@ double Term::calculate() {
 			catch (const std::out_of_range&) {
 				// Conduct Math
 				switch (operations[i]) {
-				case MULT:
+				case termMULT:
 					value *= terms.at(i).calculate();
 					break;
-				case DIV:
+				case termDIV:
 					value /= terms.at(i).calculate();
 					break;
 				default:
