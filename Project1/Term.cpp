@@ -16,7 +16,7 @@ Term::Term() {
 	this->operations = {};
 }
 
-Term::Term(bool parent, bool positive, Term firstChild) {
+Term::Term(bool parent, bool positive, Term* firstChild) {
 	this->parent = parent;
 	this->positive = positive;
 
@@ -56,7 +56,7 @@ void Term::setPositive(bool positive) {
 	this->positive = positive;
 }
 
-void Term::addSubTerm(unsigned int operation, Term subterm) {
+void Term::addSubTerm(unsigned int operation, Term* subterm) {
 	// Add Operation
 	operations.push_back(operation);
 
@@ -72,7 +72,7 @@ void Term::addSubTerm(unsigned int operation, double subterm) {
 	constants[length()] = subterm;
 }
 
-void Term::addChild(Term child) {
+void Term::addChild(Term* child) {
 	// Add Term
 	terms[length()] = child;
 }
@@ -103,7 +103,7 @@ double Term::calculate() {
 	}
 	// Conduct math from Term
 	catch (const std::out_of_range&) {
-		value = terms.at(0).calculate();
+		value = terms.at(0)->calculate();
 	}
 
 	// Start Calculation
@@ -114,14 +114,14 @@ double Term::calculate() {
 				value += constants.at(i);
 			} catch (const std::out_of_range&) {
 				// Conduct math
-				value += terms.at(i).calculate();
+				value += terms.at(i)->calculate();
 			}
 		}
 
 		// SubTerm Mode
 		else {
 			try {
-				switch (operations[i]) {
+				switch (operations[i - 1]) {
 				case termMULT:
 					value *= constants.at(i);
 					break;
@@ -134,12 +134,12 @@ double Term::calculate() {
 			}
 			catch (const std::out_of_range&) {
 				// Conduct Math
-				switch (operations[i]) {
+				switch (operations[i - 1]) {
 				case termMULT:
-					value *= terms.at(i).calculate();
+					value *= terms.at(i)->calculate();
 					break;
 				case termDIV:
-					value /= terms.at(i).calculate();
+					value /= terms.at(i)->calculate();
 					break;
 				default:
 					break;

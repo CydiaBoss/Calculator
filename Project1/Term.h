@@ -47,7 +47,7 @@ private:
 	/// <summary>
 	/// Terms under a term; child terms for parents, subterms for terms
 	/// </summary>
-	map<unsigned int, Term> terms;
+	map<unsigned int, Term*> terms;
 
 public:
 	/// <summary>
@@ -61,7 +61,7 @@ public:
 	/// <param name="parent">-> determine term type</param>
 	/// <param name="positive">-> sign of the term</param>
 	/// <param name="firstChild">-> first subterm or child</param>
-	Term(bool parent, bool positive, Term firstChild);
+	Term(bool parent, bool positive, Term* firstChild);
 
 	/// <summary>
 	/// Creates a term
@@ -94,7 +94,7 @@ public:
 	/// </summary>
 	/// <param name="operation">-> operation to apply between subterm</param>
 	/// <param name="subterm">-> Term subterm</param>
-	void addSubTerm(unsigned int operation, Term subterm);
+	void addSubTerm(unsigned int operation, Term* subterm);
 
 	/// <summary>
 	/// Add a constant subterm
@@ -107,7 +107,7 @@ public:
 	/// Add a child term
 	/// </summary>
 	/// <param name="child">-> child Term</param>
-	void addChild(Term child);
+	void addChild(Term* child);
 
 	/// <summary>
 	/// Add a child constant
