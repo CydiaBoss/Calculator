@@ -44,6 +44,18 @@ Term::Term(bool parent, bool positive, double firstChild) {
 	this->operations = {};
 }
 
+Term::~Term() {
+	// Release Terms
+	for (map<unsigned int, Term*>::iterator i = terms.begin(); i != terms.end(); i++) {
+		delete i->second;
+	}
+
+	// Reset
+	operations.clear();
+	constants.clear();
+	terms.clear();
+}
+
 bool Term::isParent() {
 	return parent;
 }
@@ -87,6 +99,12 @@ unsigned int Term::length() {
 }
 
 void Term::clear() {
+	// Release Terms
+	for (map<unsigned int, Term*>::iterator i = terms.begin(); i != terms.end(); i++) {
+		delete i->second;
+	}
+
+	// Clear
 	constants.clear();
 	terms.clear();
 	operations.clear();

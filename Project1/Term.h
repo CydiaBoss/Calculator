@@ -72,6 +72,11 @@ public:
 	Term(bool parent, bool positive, double firstChild);
 
 	/// <summary>
+	/// Destroy the term
+	/// </summary>
+	~Term();
+
+	/// <summary>
 	/// Check if a term is a parent
 	/// </summary>
 	/// <returns>parent status</returns>
