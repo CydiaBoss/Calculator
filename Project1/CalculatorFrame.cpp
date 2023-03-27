@@ -36,6 +36,7 @@ CalculatorFrame::CalculatorFrame() : wxFrame(nullptr, wxID_ANY, "Calculator", wx
 	currentNumber = 0;
 	decimalPoint = 0;
 	positive = true;
+	activeBrackets = {};
 
 	CreateStatusBar();
 
@@ -209,17 +210,38 @@ void CalculatorFrame::onZeroClick(wxCommandEvent& evt) {
 }
 
 void CalculatorFrame::onFBracketClick(wxCommandEvent& evt) {
-	displayText->SetLabelText(displayText->GetLabelText() + "(");
-
 	// Setup Term
-	activeTerms.push_back(new Term());
+	Term* new_term = new Term();
+
+	// Add to predecessor
+	if (activeTerms.back()->isParent()) {
+		// Append to parent term
+		activeTerms.back()->addChild(new_term);
+	} else {
+		// Append to subterm
+		activeTerms.back()->addSubTerm(currentOperation, new_term);
+	}
+
+	// Activate
+	activeTerms.push_back(new_term);
+
+	// Track
+	activeBrackets.push_back(new_term);
+
+	// Display
+	displayText->SetLabelText(displayText->GetLabelText() + "(");
 }
 
 void CalculatorFrame::onBBracketClick(wxCommandEvent& evt) {
-	displayText->SetLabelText(displayText->GetLabelText() + ")");
+	// Block if no active bracket
+	if (activeBrackets.size() > 0) {
+		// Remove Closed Term from active terms
+		activeTerms.pop_back();
+		activeBrackets.pop_back();
 
-	// Remove Closed Term from active terms
-	activeTerms.pop_back();
+		// Display
+		displayText->SetLabelText(displayText->GetLabelText() + ")");
+	}
 }
 
 void CalculatorFrame::onMultClick(wxCommandEvent& evt) {

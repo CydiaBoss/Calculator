@@ -23,6 +23,9 @@ protected:
 	double currentNumber;
 	unsigned int decimalPoint;
 
+	// Brackets
+	vector<Term*> activeBrackets;
+
 	// Display Objects
 	wxPanel* displayPanel;
 	wxStaticText* displayText;
