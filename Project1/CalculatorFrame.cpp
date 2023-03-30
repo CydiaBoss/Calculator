@@ -235,6 +235,37 @@ void CalculatorFrame::onFBracketClick(wxCommandEvent& evt) {
 void CalculatorFrame::onBBracketClick(wxCommandEvent& evt) {
 	// Block if no active bracket
 	if (activeBrackets.size() > 0) {
+		// MULT and DIV interject
+		if (!activeTerms.back()->isParent()) {
+			// Add Subterm
+			if (currentTerm == nullptr) {
+				activeTerms.back()->addSubTerm(currentOperation, currentNumber);
+			} else {
+				activeTerms.back()->addSubTerm(currentOperation, currentTerm);
+			}
+
+			// Remove latest activeTerm
+			activeTerms.pop_back();
+
+			// Reset
+			currentNumber = 0;
+			currentTerm = nullptr;
+			decimalPoint = 0;
+			// Regular
+		} else {
+			// Append to Parent Term
+			if (currentTerm == nullptr) {
+				activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+				// Reset
+				currentNumber = 0;
+				decimalPoint = 0;
+			} else {
+				activeTerms.back()->addChild(currentTerm);
+				// Reset
+				currentTerm = nullptr;
+			}
+		}
+
 		// Remove Closed Term from active terms
 		activeTerms.pop_back();
 		activeBrackets.pop_back();
@@ -252,7 +283,7 @@ void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
 	if (activeTerms.back()->isParent()) {
 		// Setup Term
 		if (currentTerm == nullptr) {
-			subterm_parent = new Term(false, true, currentNumber);
+			subterm_parent = new Term(false, true, currentNumber * (positive ? 1 : -1));
 		}else{
 			subterm_parent = new Term(false, true, currentTerm);
 		}
@@ -267,7 +298,7 @@ void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
 
 		// Add Subterm
 		if (currentTerm == nullptr) {
-			subterm_parent->addSubTerm(currentOperation, currentNumber);
+			subterm_parent->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
 		}
 		else {
 			subterm_parent->addSubTerm(currentOperation, currentTerm);
@@ -282,6 +313,9 @@ void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
 	currentTerm = nullptr;
 	decimalPoint = 0;
 
+	// Set for future
+	positive = true;
+
 	// Update Display
 	displayText->SetLabelText(displayText->GetLabelText() + "×");
 }
@@ -294,7 +328,7 @@ void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
 	if (activeTerms.back()->isParent()) {
 		// Setup Term
 		if (currentTerm == nullptr) {
-			subterm_parent = new Term(false, true, currentNumber);
+			subterm_parent = new Term(false, true, currentNumber * (positive ? 1 : -1));
 		}
 		else {
 			subterm_parent = new Term(false, true, currentTerm);
@@ -311,7 +345,7 @@ void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
 
 		// Add Subterm
 		if (currentTerm == nullptr) {
-			subterm_parent->addSubTerm(currentOperation, currentNumber);
+			subterm_parent->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
 		}
 		else {
 			subterm_parent->addSubTerm(currentOperation, currentTerm);
@@ -325,6 +359,9 @@ void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
 	currentNumber = 0;
 	currentTerm = nullptr;
 	decimalPoint = 0;
+
+	// Set for future
+	positive = true;
 
 	// Update Display
 	displayText->SetLabelText(displayText->GetLabelText() + "÷");
