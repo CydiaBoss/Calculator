@@ -69,5 +69,6 @@ private:
 	void onEqualClick(wxCommandEvent& evt);
 
 	void appendDigit(unsigned int digit);
+	void endingOperationMiddleware();
 };
 
