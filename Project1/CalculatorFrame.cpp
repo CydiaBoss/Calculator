@@ -225,9 +225,11 @@ void CalculatorFrame::onFBracketClick(wxCommandEvent& evt) {
 
 		// Remove latest activeTerm
 		activeTerms.pop_back();
-		// Regular
-	}
-	else {
+
+		// Append to subterm
+		activeTerms.back()->addSubTerm(currentOperation, new_term);
+	// Regular
+	} else {
 		// Append to Parent Term
 		if (currentTerm == nullptr) {
 			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
@@ -235,16 +237,16 @@ void CalculatorFrame::onFBracketClick(wxCommandEvent& evt) {
 		else {
 			activeTerms.back()->addChild(currentTerm);
 		}
-	}
 
-	// Add to predecessor
-	if (activeTerms.back()->isParent()) {
 		// Append to parent term
 		activeTerms.back()->addChild(new_term);
-	} else {
-		// Append to subterm
-		activeTerms.back()->addSubTerm(currentOperation, new_term);
 	}
+
+	// Reset
+	currentNumber = 0;
+	currentTerm = nullptr;
+	decimalPoint = 0;
+	positive = true;
 
 	// Activate
 	activeTerms.push_back(new_term);
@@ -258,45 +260,43 @@ void CalculatorFrame::onFBracketClick(wxCommandEvent& evt) {
 
 void CalculatorFrame::onBBracketClick(wxCommandEvent& evt) {
 	// Block if no active bracket
-	if (activeBrackets.size() > 0) {
-		// MULT and DIV interject
-		if (!activeTerms.back()->isParent()) {
-			// Add Subterm
-			if (currentTerm == nullptr) {
-				activeTerms.back()->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
-			} else {
-				activeTerms.back()->addSubTerm(currentOperation, currentTerm);
-			}
+	if (activeBrackets.size() == 0) {
+		return;
+	}
 
-			// Remove latest activeTerm
-			activeTerms.pop_back();
-
-			// Reset
-			currentNumber = 0;
-			currentTerm = nullptr;
-			decimalPoint = 0;
-			// Regular
+	// MULT and DIV interject
+	if (!activeTerms.back()->isParent()) {
+		// Add Subterm
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
 		} else {
-			// Append to Parent Term
-			if (currentTerm == nullptr) {
-				activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
-				// Reset
-				currentNumber = 0;
-				decimalPoint = 0;
-			} else {
-				activeTerms.back()->addChild(currentTerm);
-				// Reset
-				currentTerm = nullptr;
-			}
+			activeTerms.back()->addSubTerm(currentOperation, currentTerm);
 		}
 
-		// Remove Closed Term from active terms
+		// Remove latest activeTerm
 		activeTerms.pop_back();
-		activeBrackets.pop_back();
-
-		// Display
-		displayText->SetLabelText(displayText->GetLabelText() + ")");
+	// Regular
+	} else {
+		// Append to Parent Term
+		if (currentTerm == nullptr) {
+			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+		} else {
+			activeTerms.back()->addChild(currentTerm);
+		}
 	}
+
+	// Reset
+	currentNumber = 0;
+	currentTerm = nullptr;
+	decimalPoint = 0;
+	positive = true;
+
+	// Remove Closed Term from active terms
+	activeTerms.pop_back();
+	activeBrackets.pop_back();
+
+	// Display
+	displayText->SetLabelText(displayText->GetLabelText() + ")");
 }
 
 void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
@@ -329,9 +329,6 @@ void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
 		}
 	}
 
-	// Update currentOperator
-	currentOperation = termMULT;
-
 	// Reset
 	currentNumber = 0;
 	currentTerm = nullptr;
@@ -339,6 +336,7 @@ void CalculatorFrame::onMultClick(wxCommandEvent& evt) {
 
 	// Set for future
 	positive = true;
+	currentOperation = termMULT;
 
 	// Update Display
 	displayText->SetLabelText(displayText->GetLabelText() + "×");
@@ -363,8 +361,7 @@ void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
 
 		// Append to activeTerms
 		activeTerms.push_back(subterm_parent);
-	}
-	else {
+	} else {
 		subterm_parent = activeTerms.back();
 
 		// Add Subterm
@@ -376,9 +373,6 @@ void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
 		}
 	}
 
-	// Update currentOperator
-	currentOperation = termDIV;
-
 	// Reset
 	currentNumber = 0;
 	currentTerm = nullptr;
@@ -386,6 +380,7 @@ void CalculatorFrame::onDivClick(wxCommandEvent& evt) {
 
 	// Set for future
 	positive = true;
+	currentOperation = termDIV;
 
 	// Update Display
 	displayText->SetLabelText(displayText->GetLabelText() + "÷");
@@ -404,25 +399,20 @@ void CalculatorFrame::onAddClick(wxCommandEvent& evt) {
 
 		// Remove latest activeTerm
 		activeTerms.pop_back();
-
-		// Reset
-		currentNumber = 0;
-		currentTerm = nullptr;
-		decimalPoint = 0;
 	// Regular
 	} else {
 		// Append to Parent Term
 		if (currentTerm == nullptr) {
 			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
-			// Reset
-			currentNumber = 0;
-			decimalPoint = 0;
 		} else {
 			activeTerms.back()->addChild(currentTerm);
-			// Reset
-			currentTerm = nullptr;
 		}
 	}
+
+	// Reset
+	currentNumber = 0;
+	currentTerm = nullptr;
+	decimalPoint = 0;
 
 	// Set for future
 	positive = true;
@@ -437,33 +427,26 @@ void CalculatorFrame::onMinClick(wxCommandEvent& evt) {
 		// Add Subterm
 		if (currentTerm == nullptr) {
 			activeTerms.back()->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
-		}
-		else {
+		} else {
 			activeTerms.back()->addSubTerm(currentOperation, currentTerm);
 		}
 
 		// Remove latest activeTerm
 		activeTerms.pop_back();
-
-		// Reset
-		currentNumber = 0;
-		currentTerm = nullptr;
-		decimalPoint = 0;
 	// Regular
 	} else {
 		// Append to Parent Term
 		if (currentTerm == nullptr) {
 			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
-			// Reset
-			currentNumber = 0;
-			decimalPoint = 0;
-		}
-		else {
+		} else {
 			activeTerms.back()->addChild(currentTerm);
-			// Reset
-			currentTerm = nullptr;
 		}
 	}
+
+	// Reset
+	currentNumber = 0;
+	currentTerm = nullptr;
+	decimalPoint = 0;
 
 	// Set for future
 	positive = false;
@@ -492,24 +475,27 @@ void CalculatorFrame::onNegClick(wxCommandEvent& evt) {
 }
 
 void CalculatorFrame::onEqualClick(wxCommandEvent& evt) {
-	// MULT and DIV interject
-	if (!activeTerms.back()->isParent()) {
-		// Add Subterm
-		if (currentTerm == nullptr) {
-			activeTerms.back()->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
-		} else {
-			activeTerms.back()->addSubTerm(currentOperation, currentTerm);
-		}
+	// Process pendign operations if needed
+	if (currentOperation != termNULL || !(currentTerm == nullptr && currentNumber == 0)) {
+		// MULT and DIV interject
+		if (!activeTerms.back()->isParent()) {
+			// Add Subterm
+			if (currentTerm == nullptr) {
+				activeTerms.back()->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
+			} else {
+				activeTerms.back()->addSubTerm(currentOperation, currentTerm);
+			}
 
-		// Remove latest activeTerm
-		activeTerms.pop_back();
-	// Regular
-	} else {
-		// Append to Parent Term
-		if (currentTerm == nullptr) {
-			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+			// Remove latest activeTerm
+			activeTerms.pop_back();
+		// Regular
 		} else {
-			activeTerms.back()->addChild(currentTerm);
+			// Append to Parent Term
+			if (currentTerm == nullptr) {
+				activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
+			} else {
+				activeTerms.back()->addChild(currentTerm);
+			}
 		}
 	}
 
@@ -523,8 +509,8 @@ void CalculatorFrame::onEqualClick(wxCommandEvent& evt) {
 	wxLogStatus("Current Number: %f", activeTerms.front()->calculate());
 	currentNumber = 0;
 	currentTerm = nullptr;
-	currentOperation = termNULL;
 	decimalPoint = 0;
+	currentOperation = termNULL;
 	positive = true;
 	activeTerms.front()->clear();
 
@@ -539,32 +525,6 @@ void CalculatorFrame::appendDigit(unsigned int digit) {
 	// Adjust decimalPoint if needed
 	if (decimalPoint > 0)
 		decimalPoint++;
-}
-
-void CalculatorFrame::endingOperationMiddleware() {
-	// MULT and DIV interject
-	if (!activeTerms.back()->isParent()) {
-		// Add Subterm
-		if (currentTerm == nullptr) {
-			activeTerms.back()->addSubTerm(currentOperation, currentNumber * (positive ? 1 : -1));
-		}
-		else {
-			activeTerms.back()->addSubTerm(currentOperation, currentTerm);
-		}
-
-		// Remove latest activeTerm
-		activeTerms.pop_back();
-		// Regular
-	}
-	else {
-		// Append to Parent Term
-		if (currentTerm == nullptr) {
-			activeTerms.back()->addChild(currentNumber * (positive ? 1 : -1));
-		}
-		else {
-			activeTerms.back()->addChild(currentTerm);
-		}
-	}
 }
 
 CalculatorFrame::~CalculatorFrame() {
